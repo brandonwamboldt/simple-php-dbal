@@ -22,7 +22,7 @@ This is a simple database abstraction layer utilizing PDO, with helper functions
 	$result = db()->query( "SELECT * FROM users" );
 	
 	// Get all rows as an associative array
-	print_r( $result->as_assoc( TRUE ) );
+	print_r( $result->all( RESULT_AS_LIST ) );
 	
 	// Loop through the results
 	foreach ( $result->as_object() as $user ) {
