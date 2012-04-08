@@ -515,7 +515,7 @@ class DatabaseDriver
 	 * @param array $bind_params optional Parameters to bind to the query
 	 * @param integer $key_column optional The column from which to get the key values (Defaults to 0)
 	 * @param integer $value_column optional The column from which to get the values (Defaults to 1)
-	 * @return mixed
+	 * @return array
 	 * 
 	 * @access public
 	 */
@@ -533,7 +533,7 @@ class DatabaseDriver
 			
 			return $pairs;
 		} else {
-			return FALSE;
+			return array();
 		}
 	}
 	
@@ -543,7 +543,7 @@ class DatabaseDriver
 	 * @param string $query A query to execute that will return a result set
 	 * @param array $bind_params optional Parameters to bind to the query
 	 * @param constant $output optional The type of the result to return (Object/Array/Assoc)
-	 * @return mixed
+	 * @return array
 	 * 
 	 * @access public
 	 */
@@ -554,7 +554,7 @@ class DatabaseDriver
 		if ( $result ) {
 			return $result->{$output_type}( TRUE );
 		} else {
-			return FALSE;
+			return array();
 		}
 	}
 	
@@ -565,7 +565,7 @@ class DatabaseDriver
 	 * @param array $bind_params optional Parameters to bind to the query
 	 * @param integer $row_offset optional The row to get from the result set, defaults to 0
 	 * @param constant $output optional The type of the result to return (Object/Array/Assoc)
-	 * @return mixed
+	 * @return array|object
 	 * 
 	 * @access public
 	 */
@@ -581,7 +581,11 @@ class DatabaseDriver
 		if ( $result ) {
 			return $result->{$output_type}( FALSE, $row_offset );
 		} else {
-			return FALSE;
+			if ( $output_type == RESULT_AS_OBJECT ) {
+				return new stdClass();
+			} else {
+				return array();
+			}
 		}
 	}
 	
@@ -622,7 +626,7 @@ class DatabaseDriver
 	 * @param string $query A query to execute that will return a result set
 	 * @param array $bind_params optional Parameters to bind to the query
 	 * @param integer $column_offset optional The column to get from the row, defaults to 0
-	 * @return mixed
+	 * @return array
 	 * 
 	 * @access public
 	 */
@@ -645,7 +649,7 @@ class DatabaseDriver
 			
 			return $columns;
 		} else {
-			return FALSE;
+			return array();
 		}
 	}
 	
@@ -654,16 +658,13 @@ class DatabaseDriver
 	 * table
 	 * 
 	 * @param string $table The name of the table to truncate
+	 * @return boolean
 	 * 
 	 * @access public
 	 */
 	public function truncate( $table )
 	{
-		if ( $this->query( "TRUNCATE {$table}" ) === FALSE ) {
-			return FALSE;
-		} else {
-			return TRUE;
-		}
+		return ( $this->query( "TRUNCATE {$table}" ) === FALSE );
 	}
 	
 	/**
@@ -671,22 +672,20 @@ class DatabaseDriver
 	 * 
 	 * @param string $object_type The type of the object to drop (Table/View/Index)
 	 * @param string $object_name The name of the object to drop
+	 * @return boolean
 	 * 
 	 * @access public
 	 */
 	public function drop( $object_type = 'TABLE', $object_name )
 	{
-		if ( $this->query( "DROP {$object_type} {$object_name}" ) === FALSE ) {
-			return FALSE;
-		} else {
-			return TRUE;
-		}
+		return ( $this->query( "DROP {$object_type} {$object_name}" ) === FALSE );
 	}
 	
 	/**
 	 * Destroys an existing table
 	 * 
 	 * @param string $object_name The name of the table to drop
+	 * @return boolean
 	 * 
 	 * @access public
 	 */
@@ -699,6 +698,7 @@ class DatabaseDriver
 	 * Destroys an existing view
 	 * 
 	 * @param string $object_name The name of the table to drop
+	 * @return boolean
 	 * 
 	 * @access public
 	 */
